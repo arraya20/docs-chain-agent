@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Output elements
   const docStandardBadge = document.getElementById("docStandardBadge");
+  const evidenceContract = document.getElementById("evidenceContract");
   const docSignature = document.getElementById("docSignature");
   const docSelector = document.getElementById("docSelector");
   const docSummary = document.getElementById("docSummary");
@@ -261,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Step 1: Docs
+      evidenceContract.textContent = data.targetContract || contractAddress;
       docStandardBadge.textContent = data.doc?.standard || "Standard";
       docSignature.textContent = data.doc?.signature || functionQuery;
       docSelector.textContent = data.doc?.selector || "—";
