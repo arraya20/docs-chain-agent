@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharos Docs MCP + Chain MCP Agent</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo-group">
+        <div class="agent-badge">AI AGENT</div>
+        <h1>Pharos Docs MCP + Chain MCP Agent</h1>
+      </div>
+      <div class="network-badge">
+        <span class="pulse-dot"></span>
+        <span>Pharos Mainnet • Chain ID 1672</span>
+      </div>
+    </header>
+
+    <div class="lead-card">
+      <p class="lead-text">
+        An autonomous developer agent that composes <strong>Developer Docs MCP</strong> and <strong>Chain MCP</strong>: explains contract functions, validates interface rules, synthesizes ABI calldata, and executes live pinned on-chain calls.
+      </p>
+    </div>
+
+    <main class="main-grid">
+      <!-- Left Column: Input Controller & Presets -->
+      <section class="panel-card form-panel">
+        <div class="panel-header">
+          <h2>Agent Execution Controller</h2>
+          <span class="tag">Dual MCP</span>
+        </div>
+
+        <div class="preset-section">
+          <label class="section-label">Quick Presets</label>
+          <div class="preset-buttons">
+            <button type="button" class="preset-btn active" data-preset="totalSupply">totalSupply()</button>
+            <button type="button" class="preset-btn" data-preset="balanceOf">balanceOf(account)</button>
+            <button type="button" class="preset-btn" data-preset="allowance">allowance(owner, spender)</button>
+            <button type="button" class="preset-btn" data-preset="symbol">symbol()</button>
+            <button type="button" class="preset-btn" data-preset="owner">owner()</button>
+            <button type="button" class="preset-btn" data-preset="paused">paused()</button>
+          </div>
+        </div>
+
+        <form id="agentForm" class="agent-form">
+          <div class="form-group">
+            <label for="contractAddress">Target Contract Address (EVM)</label>
+            <input
+              type="text"
+              id="contractAddress"
+              name="contractAddress"
+              placeholder="0x..."
+              value="0x6b0a44c64190279f7034b77c13a566e914fe5ec4"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <span class="field-hint">Default: stPROS Token on Pharos Pacific Mainnet</span>
+          </div>
+
+          <div class="form-group">
+            <label for="functionQuery">Function Name or Signature</label>
+            <input
+              type="text"
+              id="functionQuery"
+              name="functionQuery"
+              placeholder="e.g. totalSupply, balanceOf(address), custom(uint256)"
+              value="totalSupply"
+              required
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <span class="field-hint">Auto-matches Developer Docs standards or parses custom ABI signature</span>
+          </div>
+
+          <div id="argsContainer" class="args-container">
+            <!-- Dynamic argument inputs inserted by JS -->
+          </div>
+
+          <div class="action-row">
+            <button type="button" id="btnExplain" class="btn btn-secondary">
+              <span class="btn-icon">📚</span> Explain via Docs MCP
+            </button>
+            <button type="submit" id="btnExecute" class="btn btn-primary">
+              <span class="btn-icon">⚡</span> Run Agent Pipeline
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Column: Live Output & Step-by-Step Provenance -->
+      <section class="panel-card output-panel">
+        <div class="panel-header">
+          <h2>Agent Provenance & Execution Trace</h2>
+          <div class="status-indicator" id="statusIndicator">
+            <span class="status-pill status-ready">Ready</span>
+          </div>
+        </div>
+
+        <div id="loadingState" class="loading-state hidden">
+          <div class="spinner"></div>
+          <p id="loadingText">Grounding Developer Docs & Querying Chain MCP...</p>
+        </div>
+
+        <div id="resultContainer" class="result-container">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🤖</div>
+            <p>Select a preset or enter contract details, then click <strong>Run Agent Pipeline</strong>.</p>
+          </div>
+
+          <div id="agentOutput" class="agent-output hidden">
+            <!-- Step 1: Docs Grounding -->
+            <div class="trace-box step-docs">
+              <div class="step-header">
+                <span class="step-num">Step 1</span>
+                <h3>Developer Docs Grounding</h3>
+                <span class="badge" id="docStandardBadge">ERC-20</span>
+              </div>
+              <div class="step-body">
+                <div class="info-row">
+                  <span class="info-label">Signature:</span>
+                  <code id="docSignature" class="code-hl"></code>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Selector:</span>
+                  <code id="docSelector"></code>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Summary:</span>
+                  <p id="docSummary" class="text-body"></p>
+                </div>
+                <div class="info-row" id="securityNotesRow">
+                  <span class="info-label">Security Note:</span>
+                  <p id="docSecurity" class="text-alert"></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Calldata Synthesis -->
+            <div class="trace-box step-calldata">
+              <div class="step-header">
+                <span class="step-num">Step 2</span>
+                <h3>Calldata Synthesis</h3>
+              </div>
+              <div class="step-body">
+                <div class="info-row">
+                  <span class="info-label">Arguments:</span>
+                  <code id="callArgs">[]</code>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Calldata:</span>
+                  <code id="callDataHex" class="code-hex"></code>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Chain MCP Execution -->
+            <div class="trace-box step-execution">
+              <div class="step-header">
+                <span class="step-num">Step 3</span>
+                <h3>Chain MCP Live Execution</h3>
+                <span class="badge badge-success" id="blockHeightBadge">Block #---</span>
+              </div>
+              <div class="step-body">
+                <div class="stat-grid">
+                  <div class="stat-card">
+                    <span class="stat-title">Bytecode Status</span>
+                    <span class="stat-val" id="bytecodeStatus">Verified Contract</span>
+                  </div>
+                  <div class="stat-card">
+                    <span class="stat-title">Raw Return Hex</span>
+                    <code class="stat-val-code" id="rawReturnHex">0x...</code>
+                  </div>
+                </div>
+                <div class="result-highlight">
+                  <span class="result-title">Decoded Value</span>
+                  <div class="result-value" id="decodedValueText">—</div>
+                  <div class="result-scaled" id="scaledValueText"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Step-by-Step Audit Trace -->
+            <div class="trace-box step-trace">
+              <div class="step-header">
+                <span class="step-num">Step 4</span>
+                <h3>Agent Audit Trail</h3>
+              </div>
+              <ul class="trace-list" id="traceList"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Built for the <strong>Pharos Agent Arena</strong> • Zero-dependency ABI encoding • Read-only transport via official MCP server (<code>https://mcp.pharos.xyz/mcp</code>).</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "pharos-docs-chain-agent",
+  "version": "1.0.0",
+  "description": "Composed Docs MCP + Chain MCP Agent for Pharos: Explains contract functions from Developer Docs, synthesizes calldata, and executes live on-chain reads via Chain MCP",
+  "type": "module",
+  "main": "src/agent.mjs",
+  "bin": {
+    "docs-chain-agent": "./src/cli.mjs"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs",
+    "test": "node --test test/abi.test.mjs test/docs-kb.test.mjs test/mcp.test.mjs test/agent.test.mjs",
+    "test:unit": "node --test test/abi.test.mjs test/docs-kb.test.mjs test/mcp.test.mjs test/agent.test.mjs",
+    "test:live": "node --test test/agent.live.test.mjs",
+    "test:all": "node --test test/*.test.mjs",
+    "check": "node --check src/*.mjs test/*.test.mjs functions/api/*.js"
+  },
+  "keywords": [
+    "pharos",
+    "mcp",
+    "agent",
+    "chain-mcp",
+    "docs-mcp",
+    "ai-agent",
+    "smart-contracts"
+  ],
+  "author": "Pharos Arena Builder",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

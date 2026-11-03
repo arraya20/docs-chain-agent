@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and runtime output
+*.log
+logs/
+
+# Test and build output
+coverage/
+dist/
+build/
+.cache/
+.wrangler/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# Local submission artifacts
+SUBMISSION.md
+SKILL.md
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE metadata
+.idea/
+.vscode/
